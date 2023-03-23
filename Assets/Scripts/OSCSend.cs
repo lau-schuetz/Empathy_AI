@@ -21,6 +21,8 @@ public class OSCSend : MonoBehaviour
         OscMessage message = new OscMessage();
         message.address = "/chuck";
         message.values.Add(script.param);
+        message.values.Add(script.chaos);
+        message.values.Add(script.just);
         osc.Send(message);
     }
 }

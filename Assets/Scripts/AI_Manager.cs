@@ -33,6 +33,10 @@ public class AI_Manager : MonoBehaviour
     public GameObject prefab;
     public GameObject[,] grid = new GameObject[50, 100];
     public List<Vector2> coordinates;
+    public GameObject Wall01;
+
+    public float chaos = 0f;
+    public float just = 1f;
 
     void instantiateGrid()
     {
@@ -89,21 +93,21 @@ public class AI_Manager : MonoBehaviour
         }
     }
 
-    /*
-    void readEmotion()
+    void changeColorLifeless(Color newColor)
     {
-        if ((int)mouthWidth > 13)
-        {
-            emotionText.text = "happy";
-        }
-        else if ((int) mouthWidth <= 13 && (int) mouthWidth > 10)
-        {
-            emotionText.text = "ok";
-        }
-        else if ((int) mouthWidth <= 10)
-            emotionText.text = "sad";
+        // randomly pick one of all grid cells and make it white
+        int x_rand = Random.Range (0, grid.GetLength(0));
+        int y_rand = Random.Range (0, grid.GetLength(1));
+        grid[x_rand, y_rand].GetComponent<Renderer>().material.SetColor("_BaseColor", white);
+        // randomly pick one of all grid cells and make it black
+        x_rand = Random.Range (0, grid.GetLength(0));
+        y_rand = Random.Range (0, grid.GetLength(1));
+        grid[x_rand, y_rand].GetComponent<Renderer>().material.SetColor("_BaseColor", Color.black);
+        // randomly pick one of all grid cells and make it black
+        x_rand = Random.Range (0, grid.GetLength(0));
+        y_rand = Random.Range (0, grid.GetLength(1));
+        grid[x_rand, y_rand].GetComponent<Renderer>().material.SetColor("_BaseColor", newColor);
     }
-    */
 
     // Start is called before the first frame update
     void Start()
@@ -115,6 +119,18 @@ public class AI_Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown("w"))
+        {
+            chaos = 1;
+        }
+
+        if (Input.GetKeyDown("s"))
+        {
+            chaos = 0;
+            just = 0;
+            Wall01.SetActive(true);
+        }
+
         // -------------- change color with Webcam input / from FaceOSC ---------------- //
 
         // average the OSC values
@@ -150,7 +166,13 @@ public class AI_Manager : MonoBehaviour
         {
             // transition in progress
             // calculate interpolated color
-            changeColor(Color.Lerp(prefab.GetComponent<Renderer>().sharedMaterial.color, targetColor, Time.deltaTime / timeLeft));
+            if (chaos == 1)
+            {
+                changeColorLifeless(Color.Lerp(prefab.GetComponent<Renderer>().sharedMaterial.color, targetColor, Time.deltaTime / timeLeft));
+            }
+            else {
+                changeColor(Color.Lerp(prefab.GetComponent<Renderer>().sharedMaterial.color, targetColor, Time.deltaTime / timeLeft));
+            }
             // update the timer
             timeLeft -= Time.deltaTime;
         }
